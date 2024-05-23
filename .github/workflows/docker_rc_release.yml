@@ -33,7 +33,7 @@ on:
 
 jobs:
   release:
-    if: github.repository == 'apache/kafka'
+    if: github.repository == 'kagarwal06/github-actions'
     runs-on: ubuntu-latest
     steps:
     - name: Checkout
