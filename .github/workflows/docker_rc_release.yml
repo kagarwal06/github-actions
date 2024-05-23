@@ -24,13 +24,6 @@ on:
         options: 
           - "jvm"
           - "native"
-      platform:
-        type: choice
-        description: Target platform for the docker Image
-        options:
-          - "linux/amd64,linux/arm64"
-          - "linux/amd64"
-          - "linux/arm64"
       rc_docker_image:
         description: RC docker image that needs to be built and pushed to Dockerhub (Example:- apache/kafka:3.6.0-rc0, apache/kafka-native:3.6.0-rc0)
         required: true
@@ -40,7 +33,7 @@ on:
 
 jobs:
   release:
-    if: github.repository == 'kagarwal06/github-actions'
+    if: github.repository == 'apache/kafka'
     runs-on: ubuntu-latest
     steps:
     - name: Checkout
@@ -64,4 +57,4 @@ jobs:
         password: ${{ secrets.DOCKERHUB_TOKEN }}
     - name: Release the RC docker image
       run: |
-        python docker/docker_release.py ${{ github.event.inputs.rc_docker_image }} --kafka-url ${{ github.event.inputs.kafka_url }} --image-type ${{ github.event.inputs.image_type }} --platform ${{ github.event.inputs.platform }}
+        python docker/docker_release.py ${{ github.event.inputs.rc_docker_image }} --kafka-url ${{ github.event.inputs.kafka_url }} --image-type ${{ github.event.inputs.image_type }}

@@ -32,6 +32,7 @@ RUN mkdir kafka; \
     gpg --batch --verify kafka.tgz.asc kafka.tgz; \
     rm kafka.tgz ; \
     cd kafka ;  \
+# Build the native-binary of the apache kafka using graalVM native-image.
     native-image --no-fallback \
         --enable-http \
         --enable-https \

@@ -40,11 +40,11 @@ import argparse
 
 from common import execute, build_docker_image_runner
 
-def build_push(image, kafka_url, image_type, platform):
+def build_push(image, kafka_url, image_type):
     try:
         create_builder()
         build_docker_image_runner(f"docker buildx build -f $DOCKER_FILE --build-arg kafka_url={kafka_url} --build-arg build_date={date.today()} --push \
-              --platform {platform} --tag {image} $DOCKER_DIR", image_type)
+              --platform linux/amd64,linux/arm64 --tag {image} $DOCKER_DIR", image_type)
     except:
         raise SystemError("Docker image push failed")
     finally:
@@ -65,12 +65,10 @@ if __name__ == "__main__":
     parser.add_argument("image", help="Dockerhub image that you want to push to (in the format <registry>/<namespace>/<image_name>:<image_tag>)")
     parser.add_argument("--image-type", "-type", choices=["jvm", "native"], default="jvm", dest="image_type", help="Image type you want to build")
     parser.add_argument("--kafka-url", "-u", dest="kafka_url", help="Kafka url to be used to download kafka binary tarball in the docker image")
-    parser.add_argument("--platform", "-p", choices=["linux/amd64", "linux/arm64", "linux/amd64,linux/arm64"],
-                        default="linux/amd64,linux/arm64", dest="platform", help="Target platform for the docker Image")
     args = parser.parse_args()
 
     print(f"Docker image of type {args.image_type} containing kafka downloaded from {args.kafka_url} will be pushed to {args.image}")
 
     print("Building and pushing the image")
-    build_push(args.image, args.kafka_url, args.image_type, args.platform)
+    build_push(args.image, args.kafka_url, args.image_type)
     print(f"Image has been pushed to {args.image}")
