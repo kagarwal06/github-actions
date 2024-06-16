@@ -1,3 +1,4 @@
+#!/usr/bin/env bash
 # Licensed to the Apache Software Foundation (ASF) under one or more
 # contributor license agreements.  See the NOTICE file distributed with
 # this work for additional information regarding copyright ownership.
@@ -13,25 +14,15 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
----
-version: '2'
-services:
-  broker:
-    image: apache/kafka:latest
-    hostname: broker
-    container_name: broker
-    ports:
-      - "9092:9092"
-      - "9093:9093"
-    volumes:
-      - ../../../fixtures/secrets:/etc/kafka/secrets
-      - ../../../fixtures/file-input:/mnt/shared/config
-    environment:
-      # Environment variables used by kafka scripts will be needed in case of File input.
-      CLUSTER_ID: '4L6g3nShT-eMCtK--X86sw'
-      # Set properties not provided in the file input
-      KAFKA_NODE_ID: 1
-      KAFKA_CONTROLLER_QUORUM_VOTERS: '1@broker:29093'
-      KAFKA_LISTENERS: 'PLAINTEXT_HOST://:9092,SSL://:9093,CONTROLLER://:29093,PLAINTEXT://:19092'
-      # Override an existing property
-      KAFKA_PROCESS_ROLES: 'broker,controller'
+declare -A env_defaults
+env_defaults=(
+# Replace CLUSTER_ID with a unique base64 UUID using "bin/kafka-storage.sh random-uuid"
+  ["CLUSTER_ID"]="5L6g3nShT-eMCtK--X86sw"
+)
+
+for key in "${!env_defaults[@]}"; do
+  if [[ -z "${!key:-}" ]]; then
+    echo ${key} not set. Setting it to default value: \"${env_defaults[$key]}\"
+    export "$key"="${env_defaults[$key]}"
+  fi
+done
